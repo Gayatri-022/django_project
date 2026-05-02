@@ -1,0 +1,1208 @@
+
+
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+
+
+.thumbnails {
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-right:15px;
+}
+
+.thumb {
+    width:60px;
+    height:60px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    object-fit:cover;
+    cursor:pointer;
+}
+
+.main-image {
+    flex: 1;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    height: auto; /* slightly reduced */
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.main-image img {
+    width: 100%;
+    height: 100%;          
+    object-fit: contain;     
+    border-radius: 8px;
+}
+
+
+.block { margin-bottom:20px; }
+
+.title { font-size:24px; font-weight:bold; }
+.price { color:#b12704; font-size:26px; font-weight:bold; }
+
+/* VARIANTS */
+.colors, .sizes { display:flex; gap:10px; }
+
+
+
+.color-box {
+    width: 35px;
+    height: 35px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.color-box.active {
+    border: 2px solid black;
+    transform: scale(1.1);
+}
+
+.size-box {
+    padding:8px 15px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    cursor:pointer;
+}
+.size-box.active { border:2px solid black; }
+.size-box.disabled { opacity:0.4; cursor:not-allowed; }
+
+/* BUTTONS */
+.btn {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.cart-btn { 
+    background:#6b2a1e; 
+    color: white;
+
+}
+.buy-btn { 
+    background:#633830; 
+    color: white;
+}
+
+/* DELIVERY */
+.delivery {
+    background:#f7f7f7;
+    padding:15px;
+    border-radius:8px;
+}
+
+/* WISHLIST */
+.wishlist {
+    font-size:22px;
+    cursor:pointer;
+}
+
+.product-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.product-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 14.5px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.product-features .icon {
+    width: 6px;
+    height: 6px;
+    background: #111;
+    border-radius: 50%;
+    margin-top: 8px;
+}
+
+.product-features .text {
+    flex: 1;
+}
+
+.size-box.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    border: 1px dashed #aaa;
+}
+
+.wishlist-icon {
+    transition: 0.3s ease;
+    filter: grayscale(100%);
+}
+
+
+.wishlist-icon.active {
+    filter: brightness(0) saturate(100%) invert(22%) sepia(94%) saturate(7486%) hue-rotate(356deg) brightness(95%) contrast(120%);
+}
+
+.container {
+    display: flex;
+    gap: 40px;
+    padding: 30px;
+    align-items: flex-start; 
+}
+
+/* LEFT SIDE FIXED */
+.left-section {
+    display: flex;
+    width: 55%;
+    position: sticky;
+    top: 100px;   /* adjust based on your navbar height */
+    align-self: flex-start;  /* 🔥 VERY IMPORTANT */
+}
+
+/* RIGHT SIDE SCROLL ONLY */
+.right-section {
+    width: 45%;
+}
+
+.stars {
+    display: flex;
+    gap: 8px; /* 🔥 better spacing */
+    font-size: 26px;
+}
+
+.stars span:hover {
+    transform: scale(1.2);
+}
+
+.stars span {
+    color: #ccc;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.stars span.active {
+    color: gold;
+}
+
+.review-actions a {
+    margin-right: 10px;
+    font-size: 13px;
+    color: #007185;
+    text-decoration: none;
+}
+.review-actions a:hover {
+    text-decoration: underline;
+}
+
+
+/* USER */
+.review-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    background: #ddd;
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+}
+
+.username {
+    font-weight: 600;
+}
+
+/* HEADER */
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.review-header .stars {
+    font-size: 16px;
+}
+
+.review-title {
+    font-weight: bold;
+}
+
+/* META */
+.review-meta {
+    font-size: 13px;
+    color: gray;
+    margin: 5px 0;
+}
+
+.verified {
+    color: #c45500;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+/* TEXT */
+.review-text {
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+/* IMAGE */
+.review-img {
+    width: 100px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+
+.review-container {
+    display: flex;
+    gap: 50px;
+    padding: 30px;
+}
+
+.avg-rating {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.stars-big {
+    font-size: 24px;
+    color: #ffa41c;
+}
+
+.total {
+    font-size: 14px;
+    color: gray;
+    margin: 10px 0;
+}
+
+.rating-bars div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 8px 0;
+}
+
+
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+}
+
+button {
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #222;
+    color: #fff;
+}
+
+
+.bar span {
+    display: block;
+    height: 100%;
+    background: #ffa41c;
+}
+
+/* RIGHT */
+.review-right {
+    width: 70%;
+}
+
+.rating-summary {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 30px;
+}
+
+.big-rating {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* ⭐ STAR BAR */
+.star-bars {
+    width: 300px;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.bar {
+    flex: 1;
+    height: 10px;
+    background: #eee;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bar span {
+    display: block;
+    height: 100%;
+    background: #ffa41c;
+    border-radius: 20px;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 per row */
+    gap: 25px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.review-card {
+    border: 1px solid #eee;
+    padding: 15px;
+    border-radius: 10px;
+    background: #fff;
+    transition: 0.2s;
+}
+
+.review-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.review-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 60px; /* space between left & right */
+    margin-top: 50px;
+    padding: 0 40px; /* spacing from screen edges */
+}
+
+.review-left {
+    min-width: 250px;
+    width: 280px;  /* 🔥 fixed width */
+    flex-shrink: 0; /* 🔥 VERY IMPORTANT */
+}
+
+.review-top > div:last-child {
+    flex: 1;              /* 🔥 take all remaining space */
+    width: 100%;          /* 🔥 force full width */
+    max-width: none;      /* 🔥 remove restriction */
+
+    background: #fafafa;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+
+.review-form {
+    background: linear-gradient(145deg, #ffffff, #f7f7f7);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    transition: 0.3s ease;
+}
+
+.review-form:hover {
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+/* TITLE */
+.review-form h3 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* LABEL */
+.review-form label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+}
+
+/* ⭐ STARS */
+.review-form .stars {
+    gap: 10px;
+    font-size: 28px;
+}
+
+.review-form .stars span {
+    transition: 0.25s ease;
+}
+
+.review-form .stars span:hover {
+    transform: scale(1.3) rotate(-5deg);
+}
+
+/* TEXTAREA */
+.review-form textarea {
+    width: 100%;
+    min-height: 140px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    padding: 14px;
+    font-size: 14px;
+    transition: 0.25s;
+    outline: none;
+}
+
+.review-form textarea:focus {
+    border-color: #7e2230;
+    box-shadow: #7e2230;
+}
+
+/* FILE INPUT */
+.review-form input[type="file"] {
+    font-size: 13px;
+    padding: 6px;
+}
+
+/* BUTTON */
+.review-form button {
+    background: linear-gradient(135deg, #7e2230, #934852);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.review-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(32, 31, 30, 0.4);
+}
+
+/* SMALL SPACING FIX */
+.review-form input,
+.review-form textarea {
+    width: 100%;
+}
+
+.fill {
+    display: block;
+    height: 100%;
+    background: #ffa41c;
+    width: 0;
+}
+
+</style>
+
+<div class="container">
+
+    <!-- LEFT -->
+    <div class="left-section">
+        <div class="thumbnails" id="thumbContainer"></div>
+
+        <div class="main-image">
+            <img id="mainImage" src="{{ product.image.url }}">
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-section">
+
+        <div class="block title">{{ product.name }}</div>
+
+        <!-- ✅ REAL WISHLIST -->
+        <div class="block">
+                <span class="wishlist icon" id="wishlistIcon" data-wishlisted="{{ is_wishlisted|yesno:'true,false' }}" onclick="toggleWishlist()">
+
+                    <img 
+                        id="wishlistImg"
+                        src="https://cdn-icons-png.flaticon.com/128/3870/3870922.png"
+                        width="30"
+                        height="30"
+                        alt="wishlist"
+                        class="wishlist-icon"
+                    >
+
+                </span>
+        </div>
+
+        <div class="block price" id="price">₹{{ product.base_price }}</div>
+
+        <!-- COLOR -->
+        <div class="block" id="colorBlock" style="display:none;">
+            <h3>Select Color</h3>
+            <div class="colors" id="colorOptions"></div>
+        </div>
+
+        <!-- SIZE -->
+        <div class="block" id="sizeBlock" style="display:none;">
+            <h3>Select Size</h3>
+            <div class="sizes" id="sizeOptions"></div>
+        </div>
+
+        <!-- STOCK -->
+        <div class="block" id="stockStatus"></div>
+
+        <!-- DELIVERY -->
+        <div class="block delivery">
+            <p>🚚 Delivery by <b id="deliveryDate"></b></p>
+            <p>✔ Free Delivery</p>
+            <p>✔ 7-day Return</p>
+        </div>
+
+        <div class="block">
+            <button id="addToCartBtn" class="btn cart-btn" onclick="addToCartVariant()">
+                Add to Cart
+            </button>
+
+            <button class="btn buy-btn" onclick="buyNow()">
+                Buy Now
+            </button>
+        </div>
+
+        <div class="block product-features">
+            <h3>About this item</h3>
+
+            <ul>
+                {% for point in product.description.splitlines %}
+                    {% if point %}
+                        <li>
+                            <span class="icon"></span>
+                            <span class="text">{{ point }}</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="review-top">
+
+<!-- LEFT SIDE -->
+<div class="review-left">
+
+    <h2>Customer reviews</h2>
+
+    <div class="avg-rating">
+        <span class="stars-big">★</span>
+        <span>{{ avg_rating|floatformat:1 }} out of 5</span>
+    </div>
+
+    <p class="total">{{ reviews|length }} global ratings</p>
+
+    <div class="rating-bars">
+        <div>5 star <span class="bar"><span class="fill" data-width="{{ rating_data.5|default:0 }}"></span></span></div>
+        <div>4 star <span class="bar"><span class="fill" data-width="{{ rating_data.4|default:0 }}"></span></span></div>
+        <div>3 star <span class="bar"><span class="fill" data-width="{{ rating_data.3|default:0 }}"></span></span></div>
+        <div>2 star <span class="bar"><span class="fill" data-width="{{ rating_data.2|default:0 }}"></span></span></div>
+        <div>1 star <span class="bar"><span class="fill" data-width="{{ rating_data.1|default:0 }}"></span></span></div>
+    </div>
+
+</div>
+
+<!-- ⭐ REVIEW FORM -->
+    {% if user.is_authenticated %}
+    <div class="review-form">
+        <h3>Write a Review</h3>
+
+        <form method="POST" enctype="multipart/form-data" action="{% url 'add_review' product.id %}">
+            {% csrf_token %}
+
+            <label>Rating:</label>
+            <div class="stars" id="starContainer">
+                <span data-value="1">★</span>
+                <span data-value="2">★</span>
+                <span data-value="3">★</span>
+                <span data-value="4">★</span>
+                <span data-value="5">★</span>
+            </div>
+
+            <input type="hidden" name="rating" id="ratingInput" required>
+
+            <br>
+
+            <textarea name="comment" placeholder="Write your review..." required></textarea>
+
+            <br>
+
+            <input type="file" name="image">
+
+            <br>
+
+            <button type="submit" style="margin-top:10px; padding:10px 20px;">
+                Submit Review
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+</div>
+
+
+<!-- ================= REVIEWS SECTION ================= -->
+<div class="review-container">
+
+    
+
+    <!-- RIGHT SIDE -->
+    <div class="review-right">
+        <h3>Customer Reviews</h3>
+
+        {% for r in reviews %}
+        <div class="review-card">
+
+        <!-- USER -->
+        <div class="review-user">
+            <div class="avatar">👤</div>
+            <div class="username">{{ r.user.username }}</div>
+        </div>
+
+        <!-- STARS + TITLE -->
+        <div class="review-header">
+            <div class="stars">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= r.rating %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="review-title">
+                {{ r.comment|truncatechars:40 }}
+            </div>
+        </div>
+
+        <!-- DATE + VERIFIED -->
+        <div class="review-meta">
+            {{ r.created_at|date:"M d, Y" }}
+
+            {% if r.is_verified %}
+                <span class="verified">✔ Verified Purchase</span>
+            {% endif %}
+        </div>
+
+        <!-- COMMENT -->
+        <div class="review-text">
+            {{ r.comment }}
+        </div>
+
+        <!-- IMAGE -->
+        {% if r.image %}
+            <img src="{{ r.image.url }}" class="review-img">
+        {% endif %}
+
+        <!-- ACTIONS -->
+        {% if r.user == user %}
+            <div class="review-actions">
+                <a href="{% url 'edit_review' r.id %}">Edit</a>
+                <a href="{% url 'delete_review' r.id %}">Delete</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+    {% empty %}
+    <p>No reviews yet.</p>
+    {% endfor %}
+    </div>
+
+</div>
+
+
+<!-- IMAGE DATA -->
+<script id="image-data" type="application/json">
+{
+    "images": [
+        {% for img in images %}
+            "{{ img.image.url }}"{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ],
+    "fallback": "{{ product.image.url }}"
+}
+</script>
+
+<!-- VARIANT DATA -->
+<script id="variant-data" type="application/json">
+    {{ variant_json|safe }}
+</script>
+
+<script>
+
+window.addEventListener("DOMContentLoaded", () => {
+
+    let icon = document.getElementById("wishlistIcon");
+    let isWishlisted = icon.dataset.wishlisted === "true";
+
+    let img = document.getElementById("wishlistImg");
+
+    if(isWishlisted){
+        img.classList.add("active");
+    } else {
+        img.classList.remove("active");
+    }
+});
+
+/* IMAGE LOGIC */
+const imgData = JSON.parse(document.getElementById("image-data").textContent);
+let images = imgData.images;
+
+if(images.length === 0){
+    images.push(imgData.fallback);
+}
+
+let mainImage = document.getElementById("mainImage");
+let thumbContainer = document.getElementById("thumbContainer");
+
+mainImage.src = images[0];
+
+images.forEach(img => {
+    let t = document.createElement("img");
+    t.src = img;
+    t.classList.add("thumb");
+
+    t.onclick = () => mainImage.src = img;
+
+    thumbContainer.appendChild(t);
+});
+
+/* VARIANT LOGIC */
+let variants = [];
+
+try {
+    const raw = document.getElementById("variant-data").textContent;
+    variants = JSON.parse(raw);
+
+    // ✅ Ensure it's always an array
+    if (!Array.isArray(variants)) {
+        variants = [];
+    }
+
+} catch (e) {
+    console.log("Variant JSON parse error:", e);
+    variants = [];
+}
+
+console.log("FINAL VARIANTS:", variants);
+
+
+console.log("VARIANTS FIXED:", variants, Array.isArray(variants));
+
+
+let selectedVariant = null;
+
+let priceEl = document.getElementById("price");
+let stockEl = document.getElementById("stockStatus");
+
+
+/* COLORS */
+function getColor(color) {
+    const c = (color || "").toLowerCase().trim();
+
+    // Try direct CSS color support
+    const test = document.createElement("div");
+    test.style.color = c;
+
+    if (test.style.color !== "") {
+        return c; // browser understands it (works for 100+ colors)
+    }
+
+    // fallback if invalid color
+    return "#ddd";
+}
+
+let colors = [...new Set(
+    variants
+        .map(v => (v.color || "").toString().trim())
+        .filter(v => v && v !== "None" && v !== "null")
+)];
+
+if(colors.length > 0){
+    document.getElementById("colorBlock").style.display = "block";
+}
+
+colors.forEach(color => {
+
+    let box = document.createElement("div");
+    box.classList.add("color-box");
+    box.style.background = getColor(color);
+
+    let variantForColor = variants.find(v => v.color === color && v.image);
+
+    box.onclick = () => {
+        document.querySelectorAll(".color-box")
+            .forEach(c => c.classList.remove("active"));
+
+        box.classList.add("active");
+
+        loadSizes(color);
+
+        let colorImages = [...new Set(
+            variants
+                .filter(v => v.color === color)
+                .map(v => v.image)
+                .filter(Boolean)
+        )];
+
+        if (colorImages.length > 0) {
+            mainImage.src = colorImages[0];
+            thumbContainer.innerHTML = "";
+
+            colorImages.forEach(img => {
+                let t = document.createElement("img");
+                t.src = img;
+                t.classList.add("thumb");
+                t.onclick = () => mainImage.src = img;
+                thumbContainer.appendChild(t);
+            });
+        }
+    };
+
+    box.onmouseenter = () => {
+        if (variantForColor?.image) {
+            mainImage.src = variantForColor.image;
+        }
+    };
+
+    box.onmouseleave = () => {
+        if (selectedVariant?.image) {
+            mainImage.src = selectedVariant.image;
+        }
+    };
+
+    document.getElementById("colorOptions").appendChild(box);
+});
+
+/* AUTO SELECT FIRST COLOR */
+if(colors.length > 0){
+    document.querySelector(".color-box").click();
+}
+
+
+/* SIZES */
+function loadSizes(color){
+
+    document.querySelectorAll(".size-box").forEach(s => s.classList.remove("active"));
+
+    selectedVariant = null; // reset when color changes
+    let sizeContainer = document.getElementById("sizeOptions");
+    sizeContainer.innerHTML = "";
+
+    let allSizes = [...new Set(
+        variants
+            .filter(v => v.color === color)   // ✅ filter by selected color
+            .map(v => v.size)
+            .filter(s => s)
+        )];
+
+    // ✅ IF NO SIZE EXISTS → AUTO SELECT FIRST VARIANT
+    if(allSizes.length === 0){
+
+        document.getElementById("sizeBlock").style.display = "none";
+
+        let variant = variants.find(v => v.color === color);
+
+        if(variant){
+            selectedVariant = variant;
+
+            priceEl.innerText = "₹" + variant.price;
+
+            if(variant.image){
+                mainImage.src = variant.image;
+            }
+
+            stockEl.innerHTML =
+                variant.stock > 0
+                ? "<span style='color:green;'>In Stock</span>"
+                : "<span style='color:red;'>Out of Stock</span>";
+        }
+
+        return; // 🚨 VERY IMPORTANT (stop further size logic)
+    }
+
+
+    // ✅ SHOW SIZE BLOCK ONLY IF SIZES EXIST
+    if(allSizes.length > 0){
+        document.getElementById("sizeBlock").style.display = "block";
+    } else {
+        document.getElementById("sizeBlock").style.display = "none";
+    }
+
+    let firstAvailableVariant = null; // ⭐ NEW
+
+    allSizes.forEach(size => {
+
+        let variant = variants.find(v =>
+            v.color === color && String(v.size).trim() === String(size).trim()
+        );
+
+        let box = document.createElement("div");
+        box.classList.add("size-box");
+        box.innerText = size;
+        box.style.background = getColor(color);
+
+        if(!variant || variant.stock === 0){
+            box.classList.add("disabled");
+        } else if(!firstAvailableVariant){
+            firstAvailableVariant = {variant, box}; // ⭐ SAVE FIRST AVAILABLE
+        }
+
+        box.onclick = () => {
+            if(!variant || variant.stock === 0) return;
+
+            selectedVariant = variant;
+
+            document.querySelectorAll(".size-box").forEach(s => s.classList.remove("active"));
+            box.classList.add("active");
+
+            priceEl.innerText = "₹" + variant.price;
+
+            if(variant.image){
+                mainImage.src = variant.image;
+            }
+
+            let cartBtn = document.getElementById("addToCartBtn");
+
+            if(variant.stock > 0){
+                stockEl.innerHTML = "<span style='color:green;'>In Stock</span>";
+
+                cartBtn.disabled = false;
+                cartBtn.style.opacity = "1";
+                cartBtn.style.cursor = "pointer";
+
+            } else {
+                stockEl.innerHTML = "<span style='color:red;'>Out of Stock</span>";
+
+                cartBtn.disabled = true;
+                cartBtn.style.opacity = "0.5";
+                cartBtn.style.cursor = "not-allowed";
+            }
+        };
+
+        sizeContainer.appendChild(box);
+    });
+
+    // ⭐ AUTO SELECT FIRST AVAILABLE SIZE
+    if(firstAvailableVariant){
+        selectedVariant = firstAvailableVariant.variant;
+
+        firstAvailableVariant.box.classList.add("active");
+
+        priceEl.innerText = "₹" + selectedVariant.price;
+
+        if(selectedVariant.image){
+            mainImage.src = selectedVariant.image;
+        }
+
+        stockEl.innerHTML =
+            selectedVariant.stock > 0
+            ? "<span style='color:green;'>In Stock</span>"
+            : "<span style='color:red;'>Out of Stock</span>";
+    }
+}
+
+
+
+/* DELIVERY */
+let d = new Date();
+d.setDate(d.getDate() + 5);
+document.getElementById("deliveryDate").innerText = d.toDateString();
+
+/* CART */
+function addToCartVariant(){
+
+    // ❌ Out of stock
+    if(selectedVariant && selectedVariant.stock === 0){
+        showToast("This item is out of stock");
+        return;
+    }
+
+    // ✅ HANDLE SIMPLE PRODUCT (NO VARIANTS)
+    if(variants.length === 0){
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        cart.push({
+            product_id: "{{ product.id }}",
+            name: "{{ product.name|escapejs }}",
+            price: parseFloat("{{ product.base_price }}"),
+            image: "{{ product.image.url }}",
+            quantity: 1
+        });
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert("Added to cart!");
+        return;
+    }
+
+    // ✅ CHECK IF SIZE EXISTS
+    let hasSize = variants.some(v => v.size);
+
+    // ❌ If size required but not selected
+    if(hasSize && !selectedVariant){
+        alert("Select size");
+        return;
+    }
+
+    // ✅ If NO size → auto select first variant
+    if(!selectedVariant){
+        selectedVariant = variants[0];
+    }
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    let existing = cart.find(i => i.variant_id === selectedVariant.id);
+
+    if(existing){
+        existing.quantity += 1;
+    } else {
+        cart.push({
+            variant_id: selectedVariant.id,
+            name: (selectedVariant.color || "") + " / " + (selectedVariant.size || ""),
+            price: selectedVariant.price,
+            image: selectedVariant.image,
+            quantity: 1
+        });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert("Added to cart!");
+}
+
+
+
+function buyNow(){
+
+    if(selectedVariant && selectedVariant.stock === 0){
+        alert("Out of stock");
+        return;
+    }
+
+    let item;
+
+    if(variants.length === 0){
+        item = {
+            product_id: "{{ product.id }}",
+            name: "{{ product.name|escapejs }}",
+            price: parseFloat("{{ product.base_price }}"),
+            image: "{{ product.image.url }}",
+            quantity: 1
+        };
+    } else {
+
+        let hasSize = variants.some(v => v.size);
+
+        if(hasSize && !selectedVariant){
+            alert("Select size");
+            return;
+        }
+
+        if(!hasSize && !selectedVariant){
+            selectedVariant = variants[0];
+        }
+
+        item = {
+            variant_id: selectedVariant.id,
+            name: (selectedVariant.color || "") + " / " + (selectedVariant.size || ""),
+            price: selectedVariant.price,
+            image: selectedVariant.image,
+            quantity: 1
+        };
+    }
+
+    localStorage.setItem("buy_now", JSON.stringify(item));
+
+    window.location.href = "{% url 'checkout' %}";
+}
+
+
+
+
+
+/* ✅ REAL WISHLIST (BACKEND) */
+function toggleWishlist(){
+    fetch("{% url 'toggle_wishlist' product.id %}")
+    .then(res => res.json())
+    .then(data => {
+
+        let img = document.getElementById("wishlistImg");
+
+        if(data.status === "added"){
+            img.classList.add("active");
+            showToast("Added to wishlist ❤️");
+        } else {
+            img.classList.remove("active");
+            showToast("Removed from wishlist");
+        }
+    });
+}
+
+const stars = document.querySelectorAll("#starContainer span");
+const ratingInput = document.getElementById("ratingInput");
+
+if (stars.length > 0 && ratingInput) {
+    stars.forEach(star => {
+        star.addEventListener("click", () => {
+            let value = star.dataset.value;
+            ratingInput.value = value;
+
+            stars.forEach(s => s.classList.remove("active"));
+
+            for (let i = 0; i < value; i++) {
+                stars[i].classList.add("active");
+            }
+        });
+    });
+}
+
+
+document.querySelectorAll(".fill").forEach(el => {
+    el.style.width = el.dataset.width + "%";
+});
+
+</script>
+
+{% endblock %}
+
+
+
+

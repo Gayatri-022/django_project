@@ -1,0 +1,317 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+
+body {
+    background: linear-gradient(135deg, #fdfaf4, #f3e7e9);
+}
+
+.container {
+    max-width: 950px;
+    margin: 40px auto;
+}
+
+/* FILTER */
+.filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.filter-btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    background: #f8f8f8;
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    border-color: #8b1c2e;
+    color: #8b1c2e;
+    font-weight: 600;
+}
+
+/* CARD */
+.order-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    margin-bottom: 18px;
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-left {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* IMAGE STACK */
+.image-stack {
+    display: flex;
+}
+
+.image-stack img {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-left: -10px;
+    border: 2px solid white;
+}
+
+/* STATUS */
+.status {
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    font-weight: 500;
+}
+
+/* COLORS */
+.placed {
+    background: #e3f2fd;
+    color: #0d47a1;
+}
+
+.processing {
+    background: #fff8e1;
+    color: #f57f17;
+}
+
+.shipped {
+    background: #f3e5f5;
+    color: #6a1b9a;
+}
+
+.outfordelivery {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.delivered {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+
+.cancelled {
+    background: #ffebee;
+    color: #b71c1c;
+}
+
+/* TEXT */
+.order-id {
+    font-weight: 600;
+    color: #8b1c2e;
+    font-size: 18px; 
+}
+
+.date {
+    font-size: 14px;
+    color: #000000;
+    display: flex;
+    align-items: center;
+}
+
+.date::before {
+    content: "|";
+    margin-right: 6px;
+    color: #000000;
+}
+
+.price {
+    font-weight: bold;
+    margin-top: 6px;
+    font-size: 16px; 
+}
+
+/* RIGHT */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* ICON */
+.arrow svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* BUTTON */
+.cancel-btn {
+    padding: 7px 14px;
+    border: none;
+    background: #ffe5e5;
+    color: #b71c1c;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.cancel-btn:hover {
+    background: #ffcccc;
+}
+
+/* STATUS + DATE */
+.status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+</style>
+
+<div class="container">
+
+<!-- FILTER -->
+<div class="filters">
+    <div class="filter-btn active" onclick="filterOrders('all')">All</div>
+    <div class="filter-btn" onclick="filterOrders('progress')">In Progress</div>
+    <div class="filter-btn" onclick="filterOrders('delivered')">Delivered</div>
+    <div class="filter-btn" onclick="filterOrders('cancelled')">Cancelled</div>
+</div>
+
+{% for order in orders %}
+{% with items=order.orderitem_set.all %}
+
+<div class="order-card" data-status="{{ order.status|lower }}">
+
+    <div class="order-left">
+
+        <!-- IMAGE STACK -->
+        <div class="image-stack">
+            {% for item in items|slice:":3" %}
+                <img src="{{ item.product.image.url }}">
+            {% endfor %}
+        </div>
+
+        <div>
+
+            <!-- STATUS + DATE -->
+            <div class="status-row">
+                <span class="status {{ order.status|lower|cut:' ' }}">
+                    ● {{ order.status }}
+                </span>
+                <span class="date">
+                    {{ order.created_at|date:"d M Y" }}
+                </span>
+            </div>
+
+            <div class="order-id">
+                Order ID: ABC-{{ order.id }}
+            </div>
+
+            <div>
+                {{ items.0.product.name }}
+                {% if items|length > 1 %}
+                    & {{ items|length|add:"-1" }} more items
+                {% endif %}
+            </div>
+
+            <div class="price">₹{{ order.total_price }}</div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="actions">
+
+        {% if order.status == 'Placed' or order.status == 'Processing' %}
+        <button class="cancel-btn" data-id="{{ order.id }}" onclick="cancelOrder(this)">
+            Cancel Order
+        </button>
+        {% endif %}
+
+        <a href="{% url 'track_order' order.id %}" class="arrow">
+            <svg fill="none" stroke="black" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </a>
+
+    </div>
+
+</div>
+
+{% endwith %}
+{% endfor %}
+
+</div>
+
+<script>
+function filterOrders(type){
+    let cards = document.querySelectorAll('.order-card');
+    let buttons = document.querySelectorAll('.filter-btn');
+
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    cards.forEach(card => {
+        let status = card.getAttribute('data-status');
+
+        if(type === 'all'){
+            card.style.display = 'flex';
+        }
+        else if(type === 'progress'){
+            if(
+                status === 'placed' ||
+                status === 'processing' ||
+                status === 'shipped' ||
+                status === 'out for delivery'
+            ){
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+        else if(type === 'delivered'){
+            card.style.display = (status === 'delivered') ? 'flex' : 'none';
+        }
+        else if(type === 'cancelled'){
+            card.style.display = (status === 'cancelled') ? 'flex' : 'none';
+        }
+    });
+}
+
+/* CANCEL ORDER */
+function cancelOrder(btn){
+    let id = btn.getAttribute("data-id");
+
+    btn.innerText = "Cancelling...";
+    btn.disabled = true;
+
+    fetch(`/cancel-order/${id}/`)
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            btn.innerText = "Cancelled";
+            btn.style.background = "#f8d7da";
+
+            // 🔥 reload after small delay (smooth feel)
+            setTimeout(() => {
+                location.reload();
+            }, 800);
+
+        } else {
+            btn.innerText = "Cancel Order";
+            btn.disabled = false;
+            alert(data.error);
+        }
+    });
+}
+
+</script>
+
+{% endblock %}

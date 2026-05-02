@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shoppers - The Ultimate Store</title>
+
+<style>
+:root {
+    --primary-color: #3d141a; 
+    --bg-color: #F2EBE0;      
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+    font-family: 'Times New Roman', Times, serif;
+}
+
+/* Header */
+header {
+    padding: 30px 80px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-circle {
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-right {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.nav-right a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-size: 18px;
+}
+
+.register-btn {
+    background: var(--primary-color);
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 6px;
+}
+
+/* Hero */
+.hero {
+    display: flex;
+    padding: 40px 80px;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80vh;
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.hero-text h1 {
+    font-size: 80px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    line-height: 1.05;
+}
+
+.hero-text p {
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-family: Arial, sans-serif;
+}
+
+.cta-btn {
+    background: var(--primary-color);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* Image Section */
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 🔥 KEY FIXES HERE */
+.hero-image img {
+    max-width: 70%;              /* smaller image */
+    height: auto;
+    border-radius: 12px;
+    
+    /* soften background mismatch */
+    mix-blend-mode: multiply;
+    
+    /* premium look */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .hero-text h1 {
+        font-size: 50px;
+    }
+
+    .hero-image img {
+        max-width: 90%;
+        margin-top: 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <div class="logo">
+            <div class="logo-circle">S</div> SHOPPERS
+        </div>
+        <div class="nav-right">
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}" class="register-btn">Register</a>
+        </div>
+    </nav>
+</header>
+
+<main class="hero">
+    <div class="hero-text">
+        <h1>The Ultimate<br>Everyday<br>Everything<br>Store</h1>
+        <p>Every product. One click away.</p>
+        <a href="/products/" class="cta-btn">Browse Products</a>
+    </div>
+
+    <div class="hero-image">
+        <img src="/static/images/cart-image.png" alt="Shopping Cart">
+    </div>
+</main>
+
+</body>
+</html>

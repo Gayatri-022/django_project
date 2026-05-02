@@ -1,0 +1,82 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    background: linear-gradient(135deg, #fdfaf4, #f3e7e9);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.payment-box {
+    max-width: 500px;
+    margin: 80px auto;
+    padding: 30px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.pay-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #3d141a, #5a1d25);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+</style>
+
+<div class="payment-box">
+    <h2>💳 Payment</h2>
+    <p>Total Amount</p>
+    <h1>₹{{ total }}</h1>
+
+    <button class="pay-btn" onclick="payNow()">
+        Pay Now
+    </button>
+</div>
+
+
+<script>
+function payNow(){
+
+    const cart = JSON.parse(
+        document.getElementById("cart-data").textContent
+    );
+
+    fetch("{% url 'place_order' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            total: "{{ total }}",
+            address_id: "{{ address_id }}",
+            cart: cart
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success){
+            alert("Payment Successful ✅");
+            window.location.href = "/success/";
+        } else {
+            alert("Order failed");
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        alert("Something went wrong");
+    });
+
+}
+</script>
+
+{% endblock %}

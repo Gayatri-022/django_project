@@ -1,0 +1,187 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    background: #fdfaf4;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* CENTER PERFECTLY */
+.auth-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* PERFECT CARD */
+.auth-box {
+    width: 100%;
+    max-width: 400px;   /* ✅ responsive instead of fixed */
+    padding: 40px;
+    border-radius: 14px;
+    background: white;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+/* LOGO */
+.logo {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: #3d141a;
+}
+
+/* TITLE */
+.auth-box h2 {
+    text-align: center;
+    margin-bottom: 5px;
+    color: #3d141a;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* INPUT GROUP */
+.input-group {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* INPUTS */
+.input-group input {
+    width: 100%;
+    padding: 13px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;   /* ✅ ensures same width */
+    font-size: 14px;
+}
+
+.input-group input:focus {
+    border-color: #3d141a;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(61,20,26,0.1);
+}
+
+/* BUTTON */
+.auth-btn {
+    width: 100%;
+    padding: 13px;   /* ✅ SAME as input */
+    background: #3d141a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    box-sizing: border-box;   /* ✅ same sizing */
+    transition: 0.3s;
+}
+
+.auth-btn:hover {
+    background: #5a1d25;
+}
+
+/* LINKS */
+.extra {
+    margin-top: 12px;
+    font-size: 13px;
+    text-align: right;
+}
+
+.extra a {
+    text-decoration: none;
+    color: #3d141a;
+}
+
+/* REGISTER */
+.bottom-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.bottom-text a {
+    color: #3d141a;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.logo-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+/* CIRCLE S */
+.logo-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid #3d141a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #3d141a;
+    font-size: 16px;
+}
+
+/* TEXT */
+.logo-text {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: #3d141a;
+}
+
+</style>
+
+
+<div class="auth-container">
+    <div class="auth-box">
+
+        <div class="logo-wrap">
+            <div class="logo-circle">S</div>
+            <span class="logo-text">SHOPPERS</span>
+        </div>
+
+        <h2>Sign in</h2>
+        <p class="subtitle">Access your account to continue</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="auth-btn">Sign In</button>
+        </form>
+
+        
+
+        <div class="bottom-text">
+            New to Shoppers?
+            <a href="{% url 'register' %}">Create account</a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

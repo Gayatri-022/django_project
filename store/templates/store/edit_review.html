@@ -1,0 +1,65 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<div style="max-width:600px; margin:50px auto; padding:20px; border:1px solid #ddd; border-radius:10px; background:#fff;">
+
+<h2>Edit Your Review</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Rating:</label>
+    <div style="display:flex; gap:5px; font-size:28px; cursor:pointer;" id="starContainer">
+        <span data-value="1">★</span>
+        <span data-value="2">★</span>
+        <span data-value="3">★</span>
+        <span data-value="4">★</span>
+        <span data-value="5">★</span>
+    </div>
+
+    <input type="hidden" name="rating" id="ratingInput" value="{{ review.rating }}">
+
+    <br>
+
+    <textarea name="comment" required
+    style="width:100%; height:100px;">{{ review.comment }}</textarea>
+
+    <br>
+
+    <button type="submit" style="margin-top:10px; padding:10px 20px;">
+        Update Review
+    </button>
+
+</form>
+
+
+</div>
+
+<script>
+const stars = document.querySelectorAll("#starContainer span");
+const ratingInput = document.getElementById("ratingInput");
+
+// ⭐ Pre-fill existing rating
+let currentRating = ratingInput.value;
+
+for (let i = 0; i < currentRating; i++) {
+    stars[i].style.color = "gold";
+}
+
+// ⭐ Click to update
+stars.forEach(star => {
+    star.addEventListener("click", () => {
+        let value = star.dataset.value;
+        ratingInput.value = value;
+
+        stars.forEach(s => s.style.color = "#ccc");
+
+        for (let i = 0; i < value; i++) {
+            stars[i].style.color = "gold";
+        }
+    });
+});
+</script>
+
+{% endblock %}

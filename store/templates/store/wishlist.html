@@ -1,0 +1,186 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    background: linear-gradient(135deg, #fdfaf4, #f3e7e9);
+}
+
+/* CONTAINER */
+.container {
+    padding: 40px;
+}
+
+/* HEADER */
+h2 {
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+/* CARD */
+.card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    transition: 0.3s ease;
+    position: relative;
+    display: flex;              
+    flex-direction: column; 
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* IMAGE BOX STYLES */
+.img-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 220px;
+    background: #fafafa;
+    text-decoration: none;
+    padding: 10px;
+    overflow: hidden;
+}
+
+.img-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* INFO */
+.card-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    flex-grow: 1;
+}
+
+.name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #222;
+
+    white-space: nowrap;       /* ✅ single line */
+    overflow: hidden;          /* ✅ hide overflow */
+    text-overflow: ellipsis;   /* ✅ show ... */
+}
+
+.price {
+    color: #b12704;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* BUTTONS - FIXED SECTION */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto; 
+}
+
+/* This targets the <a> tag inside actions specifically to reset its height */
+.actions a {
+    flex: 1;
+    text-decoration: none;
+    display: block;
+    height: auto;       /* Forces height to wrap the button only */
+    background: none;   /* Removes any inherited background */
+}
+
+
+
+
+
+.remove-btn {
+    flex: 1; 
+    background: #96221c;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.remove-btn:hover {
+    background: #d70015;
+}
+
+/* EMPTY STATE */
+.empty {
+    text-align: center;
+    padding: 80px;
+    color: #777;
+    font-size: 18px;
+}
+</style>
+
+<div class="container">
+
+    <h2>❤️ My Wishlist</h2>
+
+    {% if items %}
+
+        <div class="grid">
+
+            {% for item in items %}
+            <div class="card">
+
+                <a href="{% url 'product_detail' item.product.id %}" class="img-box">
+                    <img src="{{ item.product.image.url }}">
+                </a>
+
+                <div class="card-content">
+                    <div class="name">{{ item.product.name }}</div>
+                    <div class="price">₹{{ item.product.base_price }}</div>
+
+                    <div class="actions">
+
+                        <button class="remove-btn" onclick="removeFromWishlist('{{ item.product.id }}')">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+        <div class="empty">
+            😢 Your wishlist is empty<br>
+            <small>Start adding products you love!</small>
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+function removeFromWishlist(id){
+    fetch(`/wishlist/toggle/${id}/`)
+    .then(res => res.json())
+    .then(() => location.reload());
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    background: #f5f5f5;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.success-container {
+    max-width: 500px;
+    margin: 80px auto;
+    text-align: center;
+}
+
+.success-card {
+    background: white;
+    padding: 40px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.success-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.success-title {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.success-text {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* BUTTONS */
+.btn {
+    display: inline-block;
+    padding: 12px 18px;
+    margin: 5px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.track-btn {
+    background: #3d141a;
+    color: white;
+}
+
+.shop-btn {
+    background: #eee;
+    color: #333;
+}
+</style>
+
+<div class="success-container">
+<div class="success-card">
+
+<div class="success-icon">✅</div>
+
+<div class="success-title">Order Placed Successfully!</div>
+
+<div class="success-text">
+    Your order has been placed. You can track its status anytime.
+</div>
+
+<!-- 🔥 TRACK ORDER BUTTON -->
+<a href="{% url 'track_order' order.id %}" class="btn track-btn">
+    Track Your Order 📦
+</a>
+
+<!-- CONTINUE SHOPPING -->
+<a href="/products/" class="btn shop-btn">
+    Continue Shopping
+</a>
+
+</div>
+</div>
+
+<script>
+localStorage.removeItem('cart');
+</script>
+
+{% endblock %}

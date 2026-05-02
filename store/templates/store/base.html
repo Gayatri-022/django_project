@@ -1,0 +1,519 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>SHOPPERS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f6f6f6;
+}
+
+.icon svg {
+    display: block;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* LEFT */
+.left {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.logo a {
+    font-size: 24px;
+    font-weight: 700;
+    text-decoration: none;
+    color: #111;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #444;
+    font-size: 15.5px;
+}
+
+/* SEARCH */
+.search-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-box input {
+    width: 60%;
+    padding: 11px 16px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+}
+
+/* RIGHT */
+.right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #333;
+    font-size: 15px;
+}
+
+.icon {
+    position: relative;
+    display: flex;
+    align-items: center;   /* 🔥 THIS FIXES ALIGNMENT */
+    justify-content: center;
+    text-decoration: none;
+    color: #222;
+}
+
+.badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+
+    width: 18px;              /* 🔥 fixed size */
+    height: 18px;
+
+    background: #111;
+    color: white;
+
+    font-size: 10px;
+    display: flex;            /* 🔥 center number */
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;       /* perfect circle */
+}
+
+/* ===== MENU BAR ===== */
+.menu-bar {
+    display: flex;
+    align-items: center;
+    gap: 65px;
+    padding: 10px 40px;
+    background: #ffffff;
+    border-bottom: 1px solid #eee;
+    flex-wrap: nowrap; 
+    overflow-x: auto;
+}
+
+.menu-item {
+    font-size: 16px;
+    color: #000;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.menu-item:visited {
+    color: #000;
+}
+
+.menu-item::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    bottom: -4px;
+    left: 0;
+    background: black;
+    transition: 0.3s;
+}
+
+.menu-item:hover::after {
+    width: 100%;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -340px;
+    width: 340px;
+    height: 100%;
+    background: #fff;
+    z-index: 2000;
+    transition: 0.35s ease;
+    box-shadow: 2px 0 25px rgba(0,0,0,0.2);
+    overflow-y: auto;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+/* HEADER */
+.sidebar-header {
+    background: #232f3e;
+    color: white;
+    padding: 18px;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    cursor: pointer;
+    font-size: 22px;
+}
+
+/* SECTION */
+.sidebar-section {
+    padding: 15px 18px;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar-section h3 {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #111;
+}
+
+.sidebar-section a {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    text-decoration: none;
+    color: #444;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.sidebar-section a:hover {
+    color: #000;
+    padding-left: 5px;
+}
+
+/* OVERLAY */
+#overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    top: 0;
+    left: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+}
+
+#overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.logo-img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;   /* shows full image */
+    background: white;     /* fills empty space */
+    padding: 4px;          /* prevents tight crop */
+    border-radius: 50%;
+    border: 2px solid #8b1c2e;
+    transition: 0.3s ease;
+}
+
+
+.logo-img:hover {
+    transform: scale(1.05);
+}
+
+.logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.logo-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 6px;
+    color: #8b1c2e;
+    transform: translateY(1px);
+}
+
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+</style>
+
+</head>
+
+<body>
+
+{% if not hide_navbar %}
+<!-- NAVBAR -->
+<div class="navbar">
+
+<div class="left">
+    <div class="logo">
+        <a href="{% url 'home' %}" class="logo-wrap">
+            <img src="{% static 'images/s3.png' %}" class="logo-img">
+            <span class="logo-text">SHOPPERS</span>
+        </a>
+    </div>
+
+    
+</div>
+
+<form method="GET" action="{% url 'products' %}" class="search-box">
+    <input type="text" name="q" placeholder="Search for products...">
+</form>
+
+<div class="right">
+
+{% if not user.is_authenticated %}
+    <a href="{% url 'login' %}" class="nav-item">Login</a>
+    <a href="{% url 'register' %}" class="nav-item">Register</a>
+{% endif %}
+
+    <div class="nav-links">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'products' %}">Products</a>
+        <a href="{% url 'my_orders' %}">My Orders</a>
+    </div>
+
+<a href="{% url 'wishlist' %}" class="icon">
+
+    <img 
+        src="https://cdn-icons-png.flaticon.com/128/3870/3870922.png"
+        width="20"
+        height="20"
+        alt="wishlist"
+        class="wishlist-icon"
+    >
+
+    {% if wishlist_count > 0 %}
+        <span class="badge">{{ wishlist_count }}</span>
+    {% endif %}
+
+</a>
+
+<a href="{% url 'cart' %}" class="icon">
+
+    <img 
+        src="https://cdn-icons-png.flaticon.com/128/1170/1170678.png"
+        width="20"
+        height="20"
+        alt="cart"
+        class="cart-icon"
+    >
+
+    <span id="cart-count" class="badge">0</span>
+
+</a>
+
+
+
+</div>
+
+</div>
+{% endif %}
+
+
+{% if not hide_navbar %}
+<!-- MENU BAR -->
+<div class="menu-bar">
+<div class="menu-item" onclick="openSidebar()">☰ All</div>
+<a href="{% url 'home' %}" class="menu-item">Home</a>
+<a href="{% url 'products' %}?category=Electronics" class="menu-item">Electronics</a>
+<a href="{% url 'products' %}?category=Fashion" class="menu-item">Fashion</a>
+<a href="{% url 'products' %}?category=Accessories" class="menu-item">Accessories</a>
+<a href="{% url 'products' %}?category=Computer" class="menu-item">Computer</a>
+<a href="{% url 'products' %}?category=Books" class="menu-item">Books</a>
+<a href="{% url 'products' %}?category=Homeware" class="menu-item">Homeware</a>
+<a href="{% url 'products' %}?category=Kitchen" class="menu-item">Kitchen</a>
+<a href="{% url 'products' %}?category=Mobile" class="menu-item">Mobile</a>
+<a href="{% url 'products' %}?category=Toys" class="menu-item">Toys</a>
+<a href="{% url 'products' %}?category=Games" class="menu-item">Games</a>
+
+</div>
+{% endif %}
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+
+<div class="sidebar-header">
+
+    <div style="display:flex; align-items:center; gap:12px;">
+
+        <!-- Avatar Circle -->
+        <div style="
+            width:40px;
+            height:40px;
+            border-radius:50%;
+            background:#fff;
+            color:#232f3e;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:bold;
+            font-size:16px;
+        ">
+            {% if user.is_authenticated %}
+                {{ user.username|slice:":1"|upper }}
+            {% else %}
+                G
+            {% endif %}
+        </div>
+
+        <!-- Name -->
+        <div>
+            {% if user.is_authenticated %}
+                Hi, {{ user.username }}
+            {% else %}
+                Hello, Guest
+            {% endif %}
+        </div>
+
+    </div>
+
+    <span class="close-btn" onclick="closeSidebar()">×</span>
+
+</div>
+
+<!-- Trending -->
+<div class="sidebar-section">
+    <h3>Trending</h3>
+    <a href="#">Bestsellers</a>
+    <a href="#">New Releases</a>
+    
+</div>
+
+<!-- Digital -->
+<div class="sidebar-section">
+    <h3>Digital Devices</h3>
+    <a href="#">Echo & Alexa </a>
+    <a href="#">TV </a>
+</div>
+
+<!-- Categories -->
+<div class="sidebar-section">
+    <h3>Shop by Category</h3>
+    <a href="#">Mobiles, Computers </a>
+    <a href="#">TV, Appliances </a>
+    <a href="#">Men's Fashion </a>
+    <a href="#">Women's Fashion </a>
+    <a href="#">See All </a>
+</div>
+
+
+<!-- Help -->
+<div class="sidebar-section">
+    <h3>Help & Settings</h3>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}">Sign In</a>
+        <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+
+</div>
+
+</div>
+
+<div id="overlay" onclick="closeSidebar()"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    function updateCartCount(){
+        let el = document.getElementById('cart-count');
+        if (!el) return;   // 🔥 prevents crash
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let count = 0;
+
+        cart.forEach(item => count += item.quantity || 1);
+
+        el.innerText = count;
+    }
+
+    updateCartCount();
+
+});
+
+function openSidebar(){
+    document.getElementById("sidebar").classList.add("active");
+    document.getElementById("overlay").classList.add("active");
+}
+
+function closeSidebar(){
+    document.getElementById("sidebar").classList.remove("active");
+    document.getElementById("overlay").classList.remove("active");
+}
+
+function showToast(message){
+    let toast = document.getElementById("toast");
+    toast.innerText = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2000);
+}
+
+</script>
+
+{% block content %}{% endblock %}
+
+
+
+</body>
+</html>

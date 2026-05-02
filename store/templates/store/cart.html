@@ -1,0 +1,239 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+    body { background: linear-gradient(135deg, #fdfaf4, #f3e7e9); font-family: 'Arial', sans-serif; color: #0F1111; }
+    
+    /* --- ENLARGED CART SECTION --- */
+    #cart-container { 
+        width: 95%; 
+        max-width: 1150px; 
+        margin: 20px auto; 
+        
+    }
+
+    h1 { 
+        font-size: 28px; 
+        font-weight: 400; 
+        border-bottom: 1px solid #ddd; 
+        padding-bottom: 10px; 
+        margin-bottom: 30;  
+        text-align: left !important; 
+    }
+
+    /* --- ITEM LAYOUT --- */
+    .cart-item { 
+        background: linear-gradient(135deg, #fdfaf4, #f3e7e9); 
+        padding: 20px 0; 
+        border-bottom: 1px solid #DDD;
+        display: flex; 
+        align-items: flex-start; 
+        gap: 20px; 
+    }
+
+    .left { display: flex; flex: 1; align-items: flex-start; gap: 20px; }
+
+    .cart-img { 
+        width: 180px; 
+        height: 180px; 
+        object-fit: contain; 
+        background: #fff;
+        border-radius: 12px; /* Smooth rounded corners */
+    }
+
+    .item-details { flex: 1; }
+
+    /* Product Title Styling */
+    .item-details strong {
+        font-size: 18px;
+        font-weight: 700;
+        color: #000000; /* Amazon-style Blue */
+        display: block;
+        line-height: 1.4;
+        margin-bottom: 4px;
+    }
+
+    .stock-status { color: #007600; font-size: 12px; margin: 4px 0; }
+    .shipping-info { font-size: 12px; color: #565959; margin-bottom: 12px; }
+
+    /* --- PRICE SECTION --- */
+    .price-display {
+        font-size: 18px;
+        font-weight: 700;
+        text-align: right;
+        min-width: 100px;
+    }
+
+    /* --- CONTROLS --- */
+    .controls { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+
+    .qty-selector {
+        display: flex;
+        align-items: center;
+        background: #F0F2F2;
+        border: 1px solid #D5D9D9;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(15,17,17,.15);
+    }
+
+    .qty-btn { 
+        background: transparent;
+        border: none;
+        padding: 5px 12px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .qty-number {
+        font-size: 14px;
+        font-weight: 700;
+        padding: 0 5px;
+    }
+
+    .remove-link { 
+        color: #007185;
+        font-size: 15px;
+        cursor: pointer;
+        border-left: 1px solid #DDD;
+        padding-left: 15px;
+        text-decoration: none;
+    }
+    .remove-link:hover { text-decoration: underline; color: #C7511F; }
+
+    /* --- TOAST CONTAINER --- */
+    #toast-container {
+        position: fixed; top: 25px; right: 25px; z-index: 2147483647;
+        display: flex; flex-direction: column; gap: 12px; pointer-events: none;
+    }
+    @keyframes toastIn { from { right: -100%; opacity: 0; } to { right: 25px; opacity: 1; } }
+    @keyframes toastOut { from { right: 25px; opacity: 1; } to { right: -100%; opacity: 0; } }
+
+    .total-section { text-align: right; padding: 20px 0; font-size: 20px; }
+</style>
+
+<div id="cart-container">
+    <h1>Shopping Cart</h1>
+    
+    <div id="cart-list"></div>
+    <div class="total-section">
+        <span id="total-label" style="font-weight: 400;">Subtotal (0 items): </span>
+        <strong id="total">₹0</strong>
+    </div>
+
+    <a href="/checkout/" style="display: block; width: fit-content; margin: 20px 0 20px auto; padding: 10px 30px; background: #9b3230; border: 1px solid #7a3636; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; box-shadow: 0 2px 5px rgba(213,217,217,.5);">
+        Proceed to Checkout
+    </a>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+    function loadCart() {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let container = document.getElementById('cart-list');
+        let total = 0;
+        let count = 0;
+        container.innerHTML = "";
+
+        if (cart.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding: 50px; font-size: 20px; color: #888;">Your cart is empty.</div>`;
+            document.getElementById('total').innerText = "₹0";
+            return;
+        }
+
+        cart.forEach((item, index) => {
+            total += (item.price * item.quantity);
+            count += item.quantity;
+            
+            // The item.name variable is used here to display the Title/Name
+            container.innerHTML += `
+                <div class="cart-item">
+                    <div class="left">
+                        <img src="${item.image}" class="cart-img">
+                        <div class="item-details">
+                            <strong>${item.name}</strong> 
+                            <p class="stock-status">In stock</p>
+                            <p class="shipping-info">FREE delivery <b>Wed, 29 Apr</b> on first order</p>
+                            <div class="controls">
+                                <div class="qty-selector">
+                                    <button class="qty-btn" onclick="changeQty(${index}, -1)">−</button>
+                                    <span class="qty-number">${item.quantity}</span>
+                                    <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+                                </div>
+                                <span class="remove-link" onclick="removeItem(${index})">Delete</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-display">₹${item.price.toFixed(2)}</div>
+                </div>`;
+        });
+        document.getElementById('total-label').innerText = `Subtotal (${count} item${count !== 1 ? 's' : ''}): `;
+        document.getElementById('total').innerText = "₹" + total.toLocaleString();
+    }
+
+    function showToast(type, title, message) {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+        const colors = {
+            success: { bg: '#f0faf3', border: '#22c55e', icon: '✓' },
+            info:    { bg: '#f0f7ff', border: '#3b82f6', icon: 'i' },
+            error:   { bg: '#fff5f5', border: '#ef4444', icon: '!' }
+        };
+        const theme = colors[type];
+
+        Object.assign(toast.style, {
+            width: '320px', background: `linear-gradient(to right, ${theme.bg}, #ffffff)`,
+            border: `1px solid ${theme.border}`, borderRadius: '15px', padding: '18px',
+            display: 'flex', alignItems: 'center', gap: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+            pointerEvents: 'auto', animation: 'toastIn 0.5s ease forwards'
+        });
+
+        toast.innerHTML = `
+            <div style="width:36px; height:36px; border:2px solid ${theme.border}; color:${theme.border}; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">${theme.icon}</div>
+            <div>
+                <p style="margin:0; font-weight:bold; color:#111; font-size:15px;">${title}</p>
+                <p style="margin:2px 0 0; color:#666; font-size:13px;">${message}</p>
+            </div>
+        `;
+
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = "toastOut 0.5s ease forwards";
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    function changeQty(index, delta) {
+        let cart = JSON.parse(localStorage.getItem('cart'));
+        let item = cart[index];
+        if (delta === 1) {
+            item.quantity += 1;
+            showToast("success", "Quantity Increased", `${item.name} quantity is now ${item.quantity}`);
+        } else if (item.quantity > 1) {
+            item.quantity -= 1;
+            showToast("info", "Quantity Decreased", `${item.name} quantity is now ${item.quantity}`);
+        } else {
+            showToast("error", "Wait!", "Minimum quantity is 1");
+            return;
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        loadCart();
+    }
+
+    function removeItem(index) {
+        let cart = JSON.parse(localStorage.getItem('cart'));
+        let itemName = cart[index].name; // get safely here
+
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        loadCart();
+
+        showToast("error", "Removed", `${itemName} has been deleted.`);
+    }
+
+    document.addEventListener('DOMContentLoaded', loadCart);
+</script>
+
+{% endblock %}

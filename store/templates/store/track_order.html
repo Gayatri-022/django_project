@@ -1,0 +1,146 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    background: #f5f5f5;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.container {
+    max-width: 700px;
+    margin: 50px auto;
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* TITLE */
+.title {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+/* TIMELINE */
+.timeline {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    position: relative;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #ddd;
+    z-index: 0;
+}
+
+/* STEP */
+.step {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    line-height: 40px;
+    margin: auto;
+}
+
+.active .circle {
+    background: #3d141a;
+    color: white;
+}
+
+.label {
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+/* ORDER INFO */
+.info {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.status-text.cancelled {
+    color: red;
+}
+
+.status-text.delivered {
+    color: green;
+}
+
+.status-text.placed,
+.status-text.processing,
+.status-text.shipped,
+.status-text.out\ for\ delivery {
+    color: #3d141a;
+}
+
+</style>
+
+
+<div class="container">
+<div class="card">
+
+<div class="title">📦 Order Tracking</div>
+
+<div class="info">
+    <b>Order ID:</b> {{ order.id }} <br>
+    <b>Name:</b> {{ order.name }} <br>
+    <b>Status:</b> {{ order.status }}
+</div>
+
+<!-- TIMELINE -->
+
+{% if order.status == 'Cancelled' %}
+
+<div style="
+    background:#ffe5e5;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    color:#b30000;
+    font-weight:600;
+    margin-top:20px;
+">
+    ❌ This order has been Cancelled
+</div>
+
+{% else %}
+
+<div class="timeline">
+
+{% for step in steps %}
+<div class="step {% if forloop.counter0 <= current_step %}active{% endif %}">
+    
+    <div class="circle">✔</div>
+    <div class="label">{{ step }}</div>
+
+</div>
+{% endfor %}
+
+</div>
+
+{% endif %}
+
+</div>
+</div>
+
+{% endblock %}

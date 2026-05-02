@@ -1,0 +1,193 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #fdfaf4, #f3e7e9);
+}
+
+.glass {
+    backdrop-filter: blur(14px);
+    background: rgba(255,255,255,0.6);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+
+/* HERO */
+.hero {
+    margin: 20px;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    backdrop-filter: blur(14px);
+    background: rgba(255,255,255,0.6);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+.hero h1 {
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: gray;
+}
+
+.hero button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #3d141a, #5a1d25);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.hero button:hover {
+    transform: scale(1.05);
+}
+
+/* CATEGORY */
+.categories {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
+.cat {
+    padding: 8px 15px;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.cat:hover {
+    background: black;
+    color: white;
+}
+
+/* PRODUCTS */
+.products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin: 20px;
+}
+
+
+.card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+h4 {
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.price {
+    font-size: 16px;
+    color: #3d141a;
+}
+
+.card {
+    backdrop-filter: blur(14px);
+    background: rgba(255,255,255,0.6);
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+.add-btn {
+    margin-top: 10px;
+    padding: 10px;
+    width: 100%;
+    background: linear-gradient(135deg, #3d141a, #5a1d25);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.add-btn:hover {
+    transform: scale(1.05);
+}
+
+
+</style>
+
+<!-- 🔷 HERO -->
+<div class="hero">
+    <h1>WELCOME TO SHOPPERS</h1>
+    <p>Explore a wide range of products at the best prices</p>
+    <button onclick="window.location.href='/products/'">
+        Browse Products
+    </button>
+</div>
+
+
+
+<!-- 🛍 PRODUCTS -->
+<div class="products">
+
+{% for product in products %}
+<div class="card">
+
+    {% if product.image %}
+    <img src="{{ product.image.url }}">
+    {% endif %}
+
+    <h4>{{ product.name }}</h4>
+    <p class="price">₹{{ product.base_price }}</p>
+
+    <button 
+        data-name="{{ product.name }}" 
+        data-price="{{ product.price }}"
+        onclick="addToCartFromBtn(this)">
+        Add to Cart
+    </button>
+
+</div>
+{% endfor %}
+
+</div>
+
+<script>
+function addToCart(name, price){
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    let found = cart.find(item => item.name === name);
+
+    if(found){
+        found.quantity += 1;
+    } else {
+        cart.push({name, price, quantity:1});
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    alert("Added to cart");
+}
+
+function addToCartFromBtn(btn){
+    let name = btn.dataset.name;
+    let price = parseFloat(btn.dataset.price);
+
+    addToCart(name, price);
+}
+
+</script>
+
+{% endblock %}              

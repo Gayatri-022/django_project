@@ -1,0 +1,188 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+<style>
+
+    body {
+        background: linear-gradient(135deg, #fdfaf4, #f3e7e9);
+    }
+
+    :root {
+        --primary-dark: #1a1a1a;
+        --accent-color: #ff3e6c; 
+        --bg-light: #f8f9fa;
+        --text-muted: #7e7e7e;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .shop-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        display: grid;
+        grid-template-columns: 1fr; 
+        gap: 40px;
+    }
+
+    .shop-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        grid-column: 1 / -1;
+    }
+
+    .modern-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 8px;
+        transition: var(--transition);
+        position: relative;
+        padding: 10px; 
+    }
+
+    .img-wrapper {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        aspect-ratio: 4/5;
+        background: #f5f5f5;;
+    }
+
+    .img-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.8s ease;
+        transform: scale(0.9);
+    }
+
+    .product-card:hover .img-wrapper img { transform: scale(1.1); }
+
+    .btn-glass {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .product-details {
+        padding: 12px 10px;
+    }
+
+    .product-name {
+        max-width: 100%;
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+        text-decoration: none;
+        margin-bottom: 6px;
+        display: block;
+        white-space: nowrap;       /* ❗ force single line */
+        overflow: hidden;          /* ❗ hide extra text */
+        text-overflow: ellipsis;   /* ❗ add ... */
+    }
+
+    .price-tag {
+        font-size: 16px;
+        font-weight: 700;
+        color: #000;
+        display: block;
+        margin-top: 4px;
+    }
+</style>
+
+<div class="shop-container">
+    <header class="shop-header">
+        <div>
+            {% if request.GET.q %}
+                <h1>Search: "{{ request.GET.q }}"</h1>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="modern-grid">
+        {% for product in items %}
+        <div class="product-card">
+
+            <div class="img-wrapper">
+                <a href="{% url 'product_detail' product.id %}">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x500" alt="No image">
+                    {% endif %}
+                </a>
+
+            </div>
+
+            <div class="product-details">
+                <a href="{% url 'product_detail' product.id %}" class="product-name">
+                    {{ product.name }}
+                </a>
+                <div class="price-tag">
+                    ₹{{ product.get_price }}
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </main>
+</div>
+
+<script>
+/* =========================
+   CART LOGIC
+========================= */
+function addToCart(name, price) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let existing = cart.find(item => item.name === name);
+
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.push({ name, price, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    showNotification(`👜 ${name} added to bag!`);
+}
+
+/* =========================
+   TOAST
+========================= */
+function showNotification(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #1a1a1a;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 6px;
+        z-index: 1000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    `;
+    toast.innerText = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 2500);
+}
+</script>
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% endblock %}
