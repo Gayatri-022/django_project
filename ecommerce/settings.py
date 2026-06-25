@@ -32,6 +32,14 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ] + [h for h in os.environ.get('ALLOWED_HOSTS', '').split(',') if h]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://djangoproject-production-01d5.up.railway.app',
+]
+
+_railway_host = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+if _railway_host:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{_railway_host}')
+
 
 # Application definition
 
