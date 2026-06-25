@@ -33,6 +33,7 @@ ALLOWED_HOSTS = [
 ] + [h for h in os.environ.get('ALLOWED_HOSTS', '').split(',') if h]
 
 CSRF_TRUSTED_ORIGINS = [
+    'https://*.up.railway.app',
     'https://djangoproject-production-01d5.up.railway.app',
 ]
 
