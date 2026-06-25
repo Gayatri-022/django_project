@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,12 @@ SECRET_KEY = 'django-insecure-$5(!(hfz2$=hxf2jtkkwe!ein5pivmi9+xjs!pw40mn3bq$=@9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['djangoproject-production-01d5.up.railway.app', 'localhost', '127.0.0.1']
+
+# Allow any Railway-injected public domain at runtime
+_railway_host = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+if _railway_host:
+    ALLOWED_HOSTS.append(_railway_host)
 
 
 # Application definition
